@@ -2,6 +2,7 @@ package com.bootcamp.demo.demo_restful_api;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public class NameController {
     return MemoryDatabase.names.add(name) ? name : null;
   }
 
-  @GetMapping(value = "/get_by_last")
+  @GetMapping(value = "/lastname")
   public List<Name> getByLastName(@RequestParam String lastName) {
     // skip null check
     return MemoryDatabase.names.stream().filter(n -> lastName.equals(n.getLastName()))

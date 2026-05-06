@@ -1,12 +1,10 @@
-package com.bootcamp.demo.demo_jpa_database.entity;
+package com.bootcamp.demo.demo_user_login.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,27 +13,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "order_items")
+@Table(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Builder
-public class OrderItemEntity {
-  @Id // PK
-  @GeneratedValue(strategy = GenerationType.IDENTITY) // serial, auto_increment
+public class UserEntity {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   @Column(nullable = false)
-  @Setter
-  private Double price;
+  private String username;
   @Column(nullable = false)
-  private Integer quantity;
+  private String password;
   @Column(nullable = false)
-  @Setter
-  private Double subTotal;
-
-  // FK
-  @ManyToOne
-  @JoinColumn(name = "order_id")
-  @Setter
-  private OrderEntity orderEntity;
+  private String email;
 }

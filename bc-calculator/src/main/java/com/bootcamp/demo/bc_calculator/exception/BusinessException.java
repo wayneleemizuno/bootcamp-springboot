@@ -1,4 +1,6 @@
-package com.bootcamp.demo.bc_calculator;
+package com.bootcamp.demo.bc_calculator.exception;
+
+import com.bootcamp.demo.bc_calculator.dto.ResultType;
 
 import lombok.Getter;
 

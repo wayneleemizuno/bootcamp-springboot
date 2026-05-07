@@ -1,4 +1,4 @@
-package com.bootcamp.demo.bc_calculator;
+package com.bootcamp.demo.bc_calculator.dto;
 
 import lombok.Builder;
 import lombok.Getter;

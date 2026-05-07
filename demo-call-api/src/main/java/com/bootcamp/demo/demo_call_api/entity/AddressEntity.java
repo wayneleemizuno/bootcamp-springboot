@@ -1,5 +1,6 @@
 package com.bootcamp.demo.demo_call_api.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,5 +35,6 @@ public class AddressEntity {
   @OneToOne
   @JoinColumn(name = "user_id")
   @Setter
+  @JsonBackReference
   private UserEntity userEntity;
 }

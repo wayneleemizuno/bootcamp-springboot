@@ -3,11 +3,9 @@ package com.bootcamp.demo.demo_call_api.service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import com.bootcamp.demo.demo_call_api.entity.AddressEntity;
 import com.bootcamp.demo.demo_call_api.entity.CompanyEntity;
 import com.bootcamp.demo.demo_call_api.entity.UserEntity;
@@ -25,7 +23,7 @@ public class ForumService {
   @Autowired
   CompanyRepository companyRepository;
 
-  public List<UserDto> getUser() {
+  public List<UserDto> getUsers() {
     RestTemplate restTemplate = new RestTemplate();
     String url = "https://jsonplaceholder.typicode.com/users";
 
@@ -35,26 +33,57 @@ public class ForumService {
     return Arrays.asList(userDtos);
   }
 
+  // TD: create new DTO to return
   public List<UserEntity> postUsers() {
-    return this.getUser().stream().map(u -> {
-      UserEntity userEntry = UserEntity.builder().forumUserId(u.getId()).name(u.getName()).username(u.getUsername())
-          .email(u.getEmail()).phone(u.getPhone()).website(u.getWebsite()).build();
-      AddressEntity addressEntry = AddressEntity.builder().street(u.getAddress().getStreet())
-          .suite(u.getAddress().getSuite()).city(u.getAddress().getCity()).zipcode(u.getAddress().getZipcode())
-          .lat(u.getAddress().getGeo().getLat()).lng(u.getAddress().getGeo().getLng()).build();
+    return this.getUsers().stream().map(u -> {
+      AddressEntity addressEntry = mapAddress(u);
+      CompanyEntity companyEntry = mapCompany(u);
+      UserEntity userEntry = mapUser(u, addressEntry, companyEntry);
       addressEntry.setUserEntity(userEntry);
-      CompanyEntity companyEntry = CompanyEntity.builder().name(u.getCompany().getName())
-          .catchPhrase(u.getCompany().getCatchPhrase()).bs(u.getCompany().getBs()).build();
       companyEntry.setUserEntity(userEntry);
-      this.userRepository.save(userEntry);
-      this.addressRepository.save(addressEntry);
-      this.companyRepository.save(companyEntry);
-      return userEntry;
+      return this.userRepository.save(userEntry);
     }).collect(Collectors.toList());
   }
 
   public List<UserEntity> getDbUsers() {
     return this.userRepository.findAll();
   }
+
+  private UserEntity mapUser(UserDto userDto, AddressEntity address, CompanyEntity company) {
+    return UserEntity.builder()//
+        .forumUserId(userDto.getId())//
+        .name(userDto.getName())//
+        .username(userDto.getUsername())//
+        .email(userDto.getEmail())//
+        .phone(userDto.getPhone())//
+        .website(userDto.getWebsite())//
+        .address(address)//
+        .company(company)//
+        .build();
+
+  }
+
+  private AddressEntity mapAddress(UserDto userDto) {
+    return AddressEntity.builder()//
+        .street(userDto.getAddress().getStreet())//
+        .suite(userDto.getAddress().getSuite())//
+        .city(userDto.getAddress().getCity())//
+        .zipcode(userDto.getAddress().getZipcode())//
+        .lat(userDto.getAddress().getGeo().getLat())//
+        .lng(userDto.getAddress().getGeo().getLng())//
+        .build();
+
+  }
+
+  private CompanyEntity mapCompany(UserDto userDto) {
+    return CompanyEntity.builder()//
+        .name(userDto.getCompany().getName())//
+        .catchPhrase(userDto.getCompany().getCatchPhrase())//
+        .bs(userDto.getCompany().getBs())//
+        .build();
+
+  }
+
+
 
 }

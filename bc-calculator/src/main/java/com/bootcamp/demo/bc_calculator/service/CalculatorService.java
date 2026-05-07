@@ -2,11 +2,9 @@ package com.bootcamp.demo.bc_calculator.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
 import org.springframework.stereotype.Service;
-
-import com.bootcamp.demo.bc_calculator.dto.ResultType;
 import com.bootcamp.demo.bc_calculator.exception.BusinessException;
+import com.bootcamp.demo.bc_calculator.exception.ErrorType;
 
 @Service
 public class CalculatorService {
@@ -28,14 +26,13 @@ public class CalculatorService {
           result = numX.multiply(numY).setScale(5, RoundingMode.HALF_UP);
           break;
         case "div":
-          result = numX
-              .divide(numY, 5, RoundingMode.HALF_UP);
+          result = numX.divide(numY, 5, RoundingMode.HALF_UP);
           break;
         default:
-          throw BusinessException.of(ResultType.INVALID_OPERATION);
+          throw BusinessException.of(ErrorType.INVALID_OPERATION, x, y, operation);
       }
     } catch (NumberFormatException e) {
-      throw BusinessException.of(ResultType.INVALID_VALUE);
+      throw BusinessException.of(ErrorType.INVALID_VALUE, x, y, operation);
     }
     return result;
   }

@@ -1,12 +1,9 @@
 package com.bootcamp.demo.demo_call_api.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +20,7 @@ public class UserEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   private Long forumUserId;
   private String name;
   private String username;
@@ -30,12 +28,12 @@ public class UserEntity {
   private String phone;
   private String website;
 
-  @OneToOne(mappedBy = "userEntity", cascade = CascadeType.PERSIST)
-  @JsonManagedReference
-  private AddressEntity address;
+  // @OneToOne(mappedBy = "userEntity", cascade = CascadeType.PERSIST)
+  // @JsonManagedReference
+  // private AddressEntity address;
 
-  @OneToOne(mappedBy = "userEntity", cascade = CascadeType.PERSIST)
-  @JsonManagedReference
-  private CompanyEntity company;
+  // @OneToOne(mappedBy = "userEntity", cascade = CascadeType.PERSIST)
+  // @JsonManagedReference
+  // private CompanyEntity company;
 
 }

@@ -1,27 +1,30 @@
 package com.bootcamp.demo.demo_call_api.service;
 
+import com.bootcamp.demo.demo_call_api.dto.ForumUserDto;
+import com.bootcamp.demo.demo_call_api.entity.AddressEntity;
+import com.bootcamp.demo.demo_call_api.entity.CompanyEntity;
+import com.bootcamp.demo.demo_call_api.entity.UserEntity;
+import com.bootcamp.demo.demo_call_api.mapper.DtoMapper;
+import com.bootcamp.demo.demo_call_api.mapper.EntityMapper;
+import com.bootcamp.demo.demo_call_api.model.UserDto;
+import com.bootcamp.demo.demo_call_api.repository.AddressRepository;
+import com.bootcamp.demo.demo_call_api.repository.CompanyRepository;
+import com.bootcamp.demo.demo_call_api.repository.UserRepository;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import com.bootcamp.demo.demo_call_api.entity.AddressEntity;
-import com.bootcamp.demo.demo_call_api.entity.CompanyEntity;
-import com.bootcamp.demo.demo_call_api.entity.UserEntity;
-import com.bootcamp.demo.demo_call_api.model.UserDto;
-import com.bootcamp.demo.demo_call_api.repository.AddressRepository;
-import com.bootcamp.demo.demo_call_api.repository.CompanyRepository;
-import com.bootcamp.demo.demo_call_api.repository.UserRepository;
 
 @Service
 public class ForumService {
-  @Autowired
-  UserRepository userRepository;
-  @Autowired
-  AddressRepository addressRepository;
-  @Autowired
-  CompanyRepository companyRepository;
+  @Autowired UserRepository userRepository;
+  @Autowired AddressRepository addressRepository;
+  @Autowired CompanyRepository companyRepository;
+  @Autowired DtoMapper dtoMapper;
+  @Autowired EntityMapper entityMapper;
 
   public List<UserDto> getUsers() {
     RestTemplate restTemplate = new RestTemplate();
@@ -33,57 +36,39 @@ public class ForumService {
     return Arrays.asList(userDtos);
   }
 
-  // TD: create new DTO to return
-  public List<UserEntity> postUsers() {
-    return this.getUsers().stream().map(u -> {
-      AddressEntity addressEntry = mapAddress(u);
-      CompanyEntity companyEntry = mapCompany(u);
-      UserEntity userEntry = mapUser(u, addressEntry, companyEntry);
-      addressEntry.setUserEntity(userEntry);
-      companyEntry.setUserEntity(userEntry);
-      return this.userRepository.save(userEntry);
-    }).collect(Collectors.toList());
+  public List<ForumUserDto> postUsers() {
+    this.addressRepository.deleteAll();
+    this.companyRepository.deleteAll();
+    this.userRepository.deleteAll();
+
+    List<UserEntity> users = new ArrayList<>();
+    List<AddressEntity> addresses = new ArrayList<>();
+    List<CompanyEntity> companies = new ArrayList<>();
+
+    List<ForumUserDto> forumUserDtos =
+        this.getUsers().stream()
+            .map(
+                u -> {
+                  AddressEntity addressEntry = this.entityMapper.map(u.getAddress());
+                  CompanyEntity companyEntry = this.entityMapper.map(u.getCompany());
+                  UserEntity userEntry = this.entityMapper.map(u);
+                  addressEntry.setUserEntity(userEntry);
+                  companyEntry.setUserEntity(userEntry);
+                  users.add(userEntry);
+                  addresses.add(addressEntry);
+                  companies.add(companyEntry);
+                  return this.dtoMapper.map(u);
+                })
+            .collect(Collectors.toList());
+    this.userRepository.saveAll(users);
+    this.addressRepository.saveAll(addresses);
+    this.companyRepository.saveAll(companies);
+    return forumUserDtos;
   }
 
-  public List<UserEntity> getDbUsers() {
-    return this.userRepository.findAll();
+  public List<ForumUserDto> getDbUsers() {
+    return this.userRepository.findAll().stream()
+        .map(u -> this.dtoMapper.map(u))
+        .collect(Collectors.toList());
   }
-
-  private UserEntity mapUser(UserDto userDto, AddressEntity address, CompanyEntity company) {
-    return UserEntity.builder()//
-        .forumUserId(userDto.getId())//
-        .name(userDto.getName())//
-        .username(userDto.getUsername())//
-        .email(userDto.getEmail())//
-        .phone(userDto.getPhone())//
-        .website(userDto.getWebsite())//
-        .address(address)//
-        .company(company)//
-        .build();
-
-  }
-
-  private AddressEntity mapAddress(UserDto userDto) {
-    return AddressEntity.builder()//
-        .street(userDto.getAddress().getStreet())//
-        .suite(userDto.getAddress().getSuite())//
-        .city(userDto.getAddress().getCity())//
-        .zipcode(userDto.getAddress().getZipcode())//
-        .lat(userDto.getAddress().getGeo().getLat())//
-        .lng(userDto.getAddress().getGeo().getLng())//
-        .build();
-
-  }
-
-  private CompanyEntity mapCompany(UserDto userDto) {
-    return CompanyEntity.builder()//
-        .name(userDto.getCompany().getName())//
-        .catchPhrase(userDto.getCompany().getCatchPhrase())//
-        .bs(userDto.getCompany().getBs())//
-        .build();
-
-  }
-
-
-
 }

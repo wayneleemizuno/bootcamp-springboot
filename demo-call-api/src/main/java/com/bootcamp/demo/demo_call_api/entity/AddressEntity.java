@@ -1,6 +1,5 @@
 package com.bootcamp.demo.demo_call_api.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,21 +19,21 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class AddressEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   private String street;
   private String suite;
   private String city;
   private String zipcode;
-  private String lat;
-  private String lng;
+  private Double latitude;
+  private Double longitude;
 
   @OneToOne
   @JoinColumn(name = "user_id")
   @Setter
-  @JsonBackReference
+  // @JsonBackReference
   private UserEntity userEntity;
 }

@@ -1,0 +1,21 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "DemoList",
+      "request": "launch",
+      "mainClass": "com.bootcamp.demo.demo_call_api.DemoList",
+      "projectName": "demo-call-api"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-DemoCallApiApplication<demo-call-api>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.bootcamp.demo.demo_call_api.DemoCallApiApplication",
+      "projectName": "demo-call-api",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

@@ -19,6 +19,8 @@ public class UserDto {
     private String suite;
     private String city;
     private String zipcode;
+    // indicate the source naming value
+    // @JsonProperty(value = "geo")
     private Geo geo;
 
     @Getter

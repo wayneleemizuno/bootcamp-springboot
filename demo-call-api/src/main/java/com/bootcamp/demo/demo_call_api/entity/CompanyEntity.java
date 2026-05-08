@@ -1,6 +1,6 @@
 package com.bootcamp.demo.demo_call_api.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,13 +24,19 @@ public class CompanyEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(length = 100) // default 255
   private String name;
+
+  @Column(name = "catch_phrase", length = 230)
   private String catchPhrase;
+
+  @Column(length = 230)
   private String bs;
 
   @OneToOne
   @JoinColumn(name = "user_id")
   @Setter
-  @JsonBackReference
+  // @JsonBackReference
   private UserEntity userEntity;
 }

@@ -1,5 +1,6 @@
 package com.bootcamp.demo.bc_forum.service;
 
+import com.bootcamp.demo.bc_forum.dto.PostCommentDto;
 import com.bootcamp.demo.bc_forum.dto.UserCommentDto;
 import com.bootcamp.demo.bc_forum.dto.UserDetailDto;
 import com.bootcamp.demo.bc_forum.dto.UserPostDto;
@@ -56,10 +57,29 @@ public class ForumService {
         .collect(Collectors.toList());
   }
 
-  public List<UserCommentDto> getUserComments(String userId) {
-    Long id = Long.valueOf(userId);
-
+  public UserCommentDto getUserComments(Long userId) {
+    List<UserDetailDto> users = this.getUserDetails();
     UserDetailDto matchedUser =
-        this.getUserDetails().stream().findFirst(u -> u.getId().equals(id)).get();
+        users.stream().filter(u -> u.getId().equals(userId)).findFirst().get();
+    System.out.println("matchedUSer: " + matchedUser);
+
+    List<UserPostDto> userPostDtos =
+        Arrays.asList(matchedUser.getPosts()).stream().collect(Collectors.toList());
+    System.out.println("userPostDtos: " + userPostDtos);
+
+    List<PostCommentDto> postCommentDtos =
+        userPostDtos.stream()
+            .map(post -> Arrays.asList(post.getComments()))
+            .collect(Collectors.toList())
+            .stream()
+            .flatMap(commentList -> commentList.stream())
+            .collect(Collectors.toList());
+    System.out.println("postCommentDtos: " + postCommentDtos);
+
+    return UserCommentDto.builder()
+        .userId(matchedUser.getId())
+        .username(matchedUser.getUsername())
+        .usercomments(this.dtoMapper.map(postCommentDtos))
+        .build();
   }
 }

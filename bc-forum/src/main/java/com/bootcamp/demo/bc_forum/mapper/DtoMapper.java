@@ -1,6 +1,7 @@
 package com.bootcamp.demo.bc_forum.mapper;
 
 import com.bootcamp.demo.bc_forum.dto.PostCommentDto;
+import com.bootcamp.demo.bc_forum.dto.UserCommentDto;
 import com.bootcamp.demo.bc_forum.dto.UserDetailDto;
 import com.bootcamp.demo.bc_forum.dto.UserDetailDto.Address;
 import com.bootcamp.demo.bc_forum.dto.UserDetailDto.Address.Geo;
@@ -89,5 +90,18 @@ public class DtoMapper {
               return userPost;
             })
         .toArray(UserPostDto[]::new);
+  }
+
+  public UserCommentDto.UserComment[] map(List<PostCommentDto> postCommentDtos) {
+    return postCommentDtos.stream()
+        .map(
+            comment ->
+                UserCommentDto.UserComment.builder()
+                    .name(comment.getName())
+                    .email(comment.getEmail())
+                    .body(comment.getBody())
+                    .build())
+        .collect(Collectors.toList())
+        .toArray(UserCommentDto.UserComment[]::new);
   }
 }

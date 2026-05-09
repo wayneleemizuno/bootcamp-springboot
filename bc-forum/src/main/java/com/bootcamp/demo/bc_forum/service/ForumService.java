@@ -61,25 +61,19 @@ public class ForumService {
     List<UserDetailDto> users = this.getUserDetails();
     UserDetailDto matchedUser =
         users.stream().filter(u -> u.getId().equals(userId)).findFirst().get();
-    System.out.println("matchedUSer: " + matchedUser);
 
     List<UserPostDto> userPostDtos =
         Arrays.asList(matchedUser.getPosts()).stream().collect(Collectors.toList());
-    System.out.println("userPostDtos: " + userPostDtos);
 
     List<PostCommentDto> postCommentDtos =
         userPostDtos.stream()
-            .map(post -> Arrays.asList(post.getComments()))
-            .collect(Collectors.toList())
-            .stream()
-            .flatMap(commentList -> commentList.stream())
+            .flatMap(post -> Arrays.stream(post.getComments()))
             .collect(Collectors.toList());
-    System.out.println("postCommentDtos: " + postCommentDtos);
 
     return UserCommentDto.builder()
         .userId(matchedUser.getId())
         .username(matchedUser.getUsername())
-        .usercomments(this.dtoMapper.map(postCommentDtos))
+        .userComments(this.dtoMapper.map(postCommentDtos))
         .build();
   }
 }

@@ -8,7 +8,7 @@ import lombok.Getter;
 public class UserCommentDto {
   private Long userId;
   private String username;
-  private UserComment[] usercomments;
+  private UserComment[] userComments;
 
   @Getter
   @Builder

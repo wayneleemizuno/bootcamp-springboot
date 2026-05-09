@@ -52,22 +52,20 @@ public class DtoMapper {
         .build();
   }
 
-  public UserPostDto[] map(UserDto userDto, List<PostDto> postDtos, List<CommentDto> commentDtos) {
+  // get a list of posts of a user
+  public List<UserPostDto> map(UserDto userDto, List<PostDto> postDtos) {
     List<PostDto> matchedPost =
         postDtos.stream()
             .filter(post -> post.getUserId().equals(userDto.getId()))
             .collect(Collectors.toList());
-    List<UserPostDto> userPostDtos =
-        matchedPost.stream()
-            .map(
-                e ->
-                    UserPostDto.builder()
-                        .id(e.getId())
-                        .title(e.getTitle())
-                        .body(e.getBody())
-                        .build())
-            .collect(Collectors.toList());
+    return matchedPost.stream()
+        .map(e -> UserPostDto.builder().id(e.getId()).title(e.getTitle()).body(e.getBody()).build())
+        .collect(Collectors.toList());
+  }
 
+  // covert a list of posts of a user to an array (attribute of //# UserDetailDto)
+  public UserPostDto[] map(UserDto userDto, List<PostDto> postDtos, List<CommentDto> commentDtos) {
+    List<UserPostDto> userPostDtos = this.map(userDto, postDtos);
     return userPostDtos.stream()
         .map(
             userPost -> {
@@ -92,6 +90,7 @@ public class DtoMapper {
         .toArray(UserPostDto[]::new);
   }
 
+  // get all comments of all the posts of a user (attribute of //# UserCommentDto)
   public UserCommentDto.UserComment[] map(List<PostCommentDto> postCommentDtos) {
     return postCommentDtos.stream()
         .map(
@@ -101,7 +100,6 @@ public class DtoMapper {
                     .email(comment.getEmail())
                     .body(comment.getBody())
                     .build())
-        .collect(Collectors.toList())
         .toArray(UserCommentDto.UserComment[]::new);
   }
 }

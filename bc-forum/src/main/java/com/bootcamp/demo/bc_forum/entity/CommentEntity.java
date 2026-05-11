@@ -1,5 +1,6 @@
 package com.bootcamp.demo.bc_forum.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,14 +19,17 @@ import lombok.Setter;
 @Builder
 @Getter
 @Entity
-@Table(name = "comments")
+@Table(name = "post_comments")
 public class CommentEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  private Long forumPostId;
   private String name;
   private String email;
+
+  @Column(length = 1000)
   private String body;
 
   @ManyToOne

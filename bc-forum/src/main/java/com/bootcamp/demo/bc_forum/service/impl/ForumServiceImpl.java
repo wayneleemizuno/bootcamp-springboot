@@ -7,12 +7,18 @@ import com.bootcamp.demo.bc_forum.dto.PostCommentDto;
 import com.bootcamp.demo.bc_forum.dto.UserCommentDto;
 import com.bootcamp.demo.bc_forum.dto.UserDetailDto;
 import com.bootcamp.demo.bc_forum.dto.UserPostDto;
+import com.bootcamp.demo.bc_forum.entity.UserEntity;
 import com.bootcamp.demo.bc_forum.mapper.DtoMapper;
 import com.bootcamp.demo.bc_forum.mapper.EntityMapper;
 import com.bootcamp.demo.bc_forum.model.CommentDto;
 import com.bootcamp.demo.bc_forum.model.PostDto;
 import com.bootcamp.demo.bc_forum.model.UserDto;
+import com.bootcamp.demo.bc_forum.repository.AddressRepository;
+import com.bootcamp.demo.bc_forum.repository.CommentRepository;
+import com.bootcamp.demo.bc_forum.repository.CompanyRepository;
+import com.bootcamp.demo.bc_forum.repository.PostRepository;
 import com.bootcamp.demo.bc_forum.repository.UserRepository;
+import com.bootcamp.demo.bc_forum.service.ForumService;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,13 +27,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class ForumServiceImpl {
+public class ForumServiceImpl implements ForumService {
+  @Autowired UserRepository userRepository;
+  @Autowired CommentRepository commentRepository;
+  @Autowired PostRepository postRepository;
+  @Autowired CompanyRepository companyRepository;
+  @Autowired AddressRepository addressRepository;
   @Autowired DtoMapper dtoMapper;
   @Autowired RestTemplate restTemplate;
   @Autowired UserAPI userAPI;
   @Autowired PostAPI postAPI;
   @Autowired CommentAPI commentAPI;
-  @Autowired UserRepository userRepository;
   @Autowired EntityMapper entityMapper;
 
   public List<UserDto> getUsers() {
@@ -46,11 +56,16 @@ public class ForumServiceImpl {
     return Arrays.asList(CommentDtos);
   }
 
-  public void saveAllData() {
+  public List<UserEntity> saveAllData() {
+    this.addressRepository.deleteAll();
+    this.companyRepository.deleteAll();
+    this.commentRepository.deleteAll();
+    this.postRepository.deleteAll();
+    this.userRepository.deleteAll();
     List<UserDto> userDtos = this.getUsers();
     List<PostDto> postDtos = this.getPosts();
     List<CommentDto> commentDtos = this.getComments();
-    this.entityMapper.mapAndSave(userDtos, postDtos, commentDtos);
+    return this.entityMapper.mapAndSave(userDtos, postDtos, commentDtos);
   }
 
   public List<UserDetailDto> getUserDetails() {

@@ -27,7 +27,37 @@ public class EntityMapper {
   @Autowired PostRepository postRepository;
   @Autowired CommentRepository commentRepository;
 
-  public void mapAndSave(
+  public UserEntity mapU(UserDto userDto) {
+    return UserEntity.builder()
+        .name(userDto.getName())
+        .username(userDto.getUsername())
+        .forumUserId(userDto.getId())
+        .email(userDto.getEmail())
+        .phone(userDto.getPhone())
+        .website(userDto.getWebsite())
+        .build();
+  }
+
+  public AddressEntity mapA(UserDto userDto) {
+    return AddressEntity.builder()
+        .street(userDto.getAddressDto().getStreet())
+        .suite(userDto.getAddressDto().getSuite())
+        .city(userDto.getAddressDto().getCity())
+        .zipcode(userDto.getAddressDto().getZipcode())
+        .lat(userDto.getAddressDto().getGeoDto().getLat())
+        .lng(userDto.getAddressDto().getGeoDto().getLng())
+        .build();
+  }
+
+  public CompanyEntity mapC(UserDto userDto) {
+    return CompanyEntity.builder()
+        .name(userDto.getCompanyDto().getName())
+        .catchPhrase(userDto.getCompanyDto().getCatchPhrase())
+        .bs(userDto.getCompanyDto().getBs())
+        .build();
+  }
+
+  public List<UserEntity> mapAndSave(
       List<UserDto> userDtos, List<PostDto> postDtos, List<CommentDto> commentDtos) {
     List<UserEntity> userEntities = new LinkedList<>();
     List<AddressEntity> addressEntities = new LinkedList<>();
@@ -35,34 +65,14 @@ public class EntityMapper {
     userDtos.stream()
         .map(
             u -> {
-              UserEntity userEntity =
-                  UserEntity.builder()
-                      .name(u.getName())
-                      .username(u.getUsername())
-                      .email(u.getEmail())
-                      .phone(u.getPhone())
-                      .website(u.getWebsite())
-                      .build();
+              UserEntity userEntity = this.mapU(u);
               userEntities.add(userEntity);
 
-              AddressEntity addressEntity =
-                  AddressEntity.builder()
-                      .street(u.getAddressDto().getStreet())
-                      .suite(u.getAddressDto().getSuite())
-                      .city(u.getAddressDto().getCity())
-                      .zipcode(u.getAddressDto().getZipcode())
-                      .lat(u.getAddressDto().getGeoDto().getLat())
-                      .lng(u.getAddressDto().getGeoDto().getLng())
-                      .build();
+              AddressEntity addressEntity = this.mapA(u);
               addressEntity.setUserEntity(userEntity);
               addressEntities.add(addressEntity);
 
-              CompanyEntity companyEntity =
-                  CompanyEntity.builder()
-                      .name(u.getCompanyDto().getName())
-                      .catchPhrase(u.getCompanyDto().getCatchPhrase())
-                      .bs(u.getCompanyDto().getBs())
-                      .build();
+              CompanyEntity companyEntity = this.mapC(u);
               companyEntity.setUserEntity(userEntity);
               companyEntities.add(companyEntity);
               return userEntity;
@@ -78,16 +88,20 @@ public class EntityMapper {
                 p -> {
                   UserEntity matchedUser =
                       userEntities.stream()
-                          .filter(u -> u.getId().equals(p.getUserId()))
+                          .filter(u -> u.getForumUserId().equals(p.getUserId()))
                           .findFirst()
                           .get();
                   PostEntity postEntity =
-                      PostEntity.builder().title(p.getTitle()).body(p.getBody()).build();
-                  postEntity.setUserEntity(matchedUser);
+                      PostEntity.builder()
+                          .forumPostId(p.getId())
+                          .forumUserId(p.getUserId())
+                          .title(p.getTitle())
+                          .body(p.getBody())
+                          .userEntity(matchedUser)
+                          .build();
                   return postEntity;
                 })
             .collect(Collectors.toList());
-    this.postRepository.saveAll(postEntities);
 
     List<CommentEntity> commentEntities =
         commentDtos.stream()
@@ -95,19 +109,24 @@ public class EntityMapper {
                 c -> {
                   PostEntity matchedPost =
                       postEntities.stream()
-                          .filter(p -> p.getId().equals(c.getPostId()))
+                          .filter(p -> p.getForumPostId().equals(c.getPostId()))
                           .findFirst()
                           .get();
                   CommentEntity commentEntity =
                       CommentEntity.builder()
+                          .forumPostId(c.getPostId())
                           .name(c.getName())
                           .email(c.getEmail())
                           .body(c.getBody())
+                          .postEntity(matchedPost)
                           .build();
-                  commentEntity.setPostEntity(matchedPost);
                   return commentEntity;
                 })
             .collect(Collectors.toList());
+
+    this.postRepository.saveAll(postEntities);
     this.commentRepository.saveAll(commentEntities);
+
+    return userEntities;
   }
 }

@@ -1,5 +1,6 @@
 package com.bootcamp.demo.bc_forum.dto;
 
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,7 +9,7 @@ import lombok.Getter;
 public class UserCommentDto {
   private Long userId;
   private String username;
-  private UserComment[] userComments;
+  private List<UserComment> userComments;
 
   @Getter
   @Builder

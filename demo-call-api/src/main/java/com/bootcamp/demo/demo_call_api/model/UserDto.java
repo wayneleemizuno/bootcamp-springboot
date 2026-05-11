@@ -2,6 +2,7 @@ package com.bootcamp.demo.demo_call_api.model;
 
 import lombok.Getter;
 
+// ! Deserialisation (JSON -> object)
 @Getter
 public class UserDto {
   private Long id;

@@ -1,19 +1,18 @@
-package com.bootcamp.demo.bc_forum.controller;
+package com.bootcamp.demo.bc_forum.controller.impl;
 
+import com.bootcamp.demo.bc_forum.controller.ForumOperation;
 import com.bootcamp.demo.bc_forum.dto.UserCommentDto;
 import com.bootcamp.demo.bc_forum.dto.UserDetailDto;
-import com.bootcamp.demo.bc_forum.service.ForumService;
+import com.bootcamp.demo.bc_forum.service.impl.ForumServiceImpl;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-@ResponseBody
-public class ForumController {
-  @Autowired ForumService forumService;
+@RestController
+public class ForumController implements ForumOperation {
+  @Autowired ForumServiceImpl forumService;
 
   @GetMapping(value = "/userdetail")
   public List<UserDetailDto> getUserDetails() {

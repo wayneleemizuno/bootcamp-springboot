@@ -1,5 +1,6 @@
 package com.bootcamp.demo.bc_forum.dto;
 
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -16,7 +17,7 @@ public class UserDetailDto {
   private String phone;
   private String website;
   private Company company;
-  private UserPostDto[] posts;
+  private List<UserPostDto> posts;
 
   @Getter
   @Builder

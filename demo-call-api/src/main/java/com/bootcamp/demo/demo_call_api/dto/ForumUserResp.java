@@ -5,7 +5,8 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class ForumUserDto {
+// ! Serialisation (object -> JSON)
+public class ForumUserResp { // Resp = Response
   private String email;
   private String phone;
   private String username;

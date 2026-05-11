@@ -1,6 +1,5 @@
-package com.bootcamp.demo.demo_call_api.entity;
+package com.bootcamp.demo.bc_forum.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,29 +13,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Table(name = "company")
-@Builder
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@Getter
+@Entity
+@Table(name = "companies")
 public class CompanyEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(length = 100) // default 255
   private String name;
-
-  @Column(name = "catch_phrase", length = 230)
   private String catchPhrase;
-
-  @Column(length = 230)
   private String bs;
 
   @OneToOne
   @JoinColumn(name = "user_id", nullable = false)
   @Setter
-  // @JsonBackReference
   private UserEntity userEntity;
 }

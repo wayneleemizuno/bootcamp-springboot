@@ -1,22 +1,22 @@
 package com.bootcamp.demo.demo_call_api.mapper;
 
-import com.bootcamp.demo.demo_call_api.dto.ForumUserDto;
+import com.bootcamp.demo.demo_call_api.dto.ForumUserResp;
 import com.bootcamp.demo.demo_call_api.entity.UserEntity;
 import com.bootcamp.demo.demo_call_api.model.UserDto;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DtoMapper {
-  public ForumUserDto map(UserEntity userEntity) {
-    return ForumUserDto.builder()
+  public ForumUserResp map(UserEntity userEntity) {
+    return ForumUserResp.builder()
         .email(userEntity.getEmail())
         .phone(userEntity.getPhone())
         .username(userEntity.getUsername())
         .build();
   }
 
-  public ForumUserDto map(UserDto userDto) {
-    return ForumUserDto.builder()
+  public ForumUserResp map(UserDto userDto) {
+    return ForumUserResp.builder()
         .email(userDto.getEmail())
         .phone(userDto.getPhone())
         .username(userDto.getUsername())

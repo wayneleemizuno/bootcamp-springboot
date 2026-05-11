@@ -1,0 +1,6 @@
+package com.bootcamp.demo.bc_forum.repository;
+
+import com.bootcamp.demo.bc_forum.entity.CommentEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CommentRepository extends JpaRepository<CommentEntity, Long> {}

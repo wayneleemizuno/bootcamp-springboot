@@ -32,7 +32,7 @@ public class AddressEntity {
   private Double longitude;
 
   @OneToOne
-  @JoinColumn(name = "user_id")
+  @JoinColumn(name = "user_id", nullable = false)
   @Setter
   // @JsonBackReference
   private UserEntity userEntity;

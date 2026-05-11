@@ -1,12 +1,11 @@
-package com.bootcamp.demo.demo_call_api.entity;
+package com.bootcamp.demo.bc_forum.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,29 +13,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Table(name = "company")
-@Builder
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CompanyEntity {
+@Builder
+@Getter
+@Entity
+@Table(name = "comments")
+public class CommentEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(length = 100) // default 255
   private String name;
+  private String email;
+  private String body;
 
-  @Column(name = "catch_phrase", length = 230)
-  private String catchPhrase;
-
-  @Column(length = 230)
-  private String bs;
-
-  @OneToOne
-  @JoinColumn(name = "user_id", nullable = false)
+  @ManyToOne
+  @JoinColumn(name = "post_id", nullable = false)
   @Setter
-  // @JsonBackReference
-  private UserEntity userEntity;
+  private PostEntity postEntity;
 }

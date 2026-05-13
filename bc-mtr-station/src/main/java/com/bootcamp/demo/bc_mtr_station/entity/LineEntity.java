@@ -1,6 +1,5 @@
-package com.bootcamp.demo.bc_forum.entity;
+package com.bootcamp.demo.bc_mtr_station.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,23 +10,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@Getter
 @Entity
-@Table(name = "users")
-public class UserEntity {
+@Table(name = "lines")
+public class LineEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(unique = true)
-  private Long forumUserId;
-
   private String name;
-  private String username;
-  private String email;
-  private String phone;
-  private String website;
+  private String code;
 }

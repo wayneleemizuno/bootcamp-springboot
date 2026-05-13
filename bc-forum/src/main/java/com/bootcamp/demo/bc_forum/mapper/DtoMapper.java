@@ -41,7 +41,7 @@ public class DtoMapper {
   public UserDetailDto map(
       UserDto userDto, Address address, Company company, List<UserPostDto> posts) {
     return UserDetailDto.builder()
-        .id(userDto.getId())
+        .forumUserId(userDto.getId())
         .name(userDto.getName())
         .username(userDto.getUsername())
         .email(userDto.getEmail())
@@ -55,24 +55,28 @@ public class DtoMapper {
 
   // get a list of posts of a user
   public List<UserPostDto> map(UserDto userDto, List<PostDto> postDtos) {
-    List<PostDto> matchedPost =
-        postDtos.stream()
-            .filter(post -> post.getUserId().equals(userDto.getId()))
-            .collect(Collectors.toList());
-    return matchedPost.stream()
-        .map(e -> UserPostDto.builder().id(e.getId()).title(e.getTitle()).body(e.getBody()).build())
+    return postDtos.stream()
+        .filter(post -> post.getUserId().equals(userDto.getId()))
+        .collect(Collectors.toList())
+        .stream()
+        .map(
+            p ->
+                UserPostDto.builder()
+                    .forumPostId(p.getId())
+                    .title(p.getTitle())
+                    .body(p.getBody())
+                    .build())
         .collect(Collectors.toList());
   }
 
   public List<UserPostDto> map(
       UserDto userDto, List<PostDto> postDtos, List<CommentDto> commentDtos) {
-    List<UserPostDto> userPostDtos = this.map(userDto, postDtos);
-    return userPostDtos.stream()
+    return this.map(userDto, postDtos).stream()
         .map(
             userPost -> {
               List<CommentDto> matchedComments =
                   commentDtos.stream()
-                      .filter(comment -> comment.getPostId().equals(userPost.getId()))
+                      .filter(comment -> comment.getPostId().equals(userPost.getForumPostId()))
                       .collect(Collectors.toList());
               List<PostCommentDto> postCommentDtos =
                   matchedComments.stream()

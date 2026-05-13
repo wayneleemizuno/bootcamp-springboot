@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class UserCommentDto {
-  private Long userId;
+  private Long forumUserId;
   private String username;
   private List<UserComment> userComments;
 

@@ -10,8 +10,8 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(NoSuchElementException.class)
   public ErrorDto handleNSE() {
     return ErrorDto.builder()
-        .code(ErrorTypes.USER_NOT_FOUND.getCode())
-        .message(ErrorTypes.USER_NOT_FOUND.getMessage())
+        .code(ErrorTypes.TARGET_NOT_FOUND.getCode())
+        .message(ErrorTypes.TARGET_NOT_FOUND.getMessage())
         .build();
   }
 
@@ -22,10 +22,4 @@ public class GlobalExceptionHandler {
         .message(ErrorTypes.INVALID_ID.getMessage())
         .build();
   }
-
-  // @ExceptionHandler(RestTemplateException.class)
-  // public ErrorDto handleRTE(){
-
-  // }
-
 }

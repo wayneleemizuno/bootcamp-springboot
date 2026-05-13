@@ -1,33 +1,39 @@
-package com.bootcamp.demo.bc_forum.entity;
+package com.bootcamp.demo.bc_mtr_station.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@Getter
 @Entity
-@Table(name = "users")
-public class UserEntity {
+@Table(name = "line_station")
+public class LineStationEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(unique = true)
-  private Long forumUserId;
+  @Setter
+  @ManyToOne
+  @Column(name = "line", nullable = false)
+  @JoinColumn
+  private LineEntity lineEntity;
 
-  private String name;
-  private String username;
-  private String email;
-  private String phone;
-  private String website;
+  @Setter
+  @ManyToOne
+  @Column(name = "station", nullable = false)
+  @JoinColumn
+  private StationEntity stationEntity;
 }

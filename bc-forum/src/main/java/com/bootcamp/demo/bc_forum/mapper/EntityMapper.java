@@ -15,7 +15,6 @@ import com.bootcamp.demo.bc_forum.repository.PostRepository;
 import com.bootcamp.demo.bc_forum.repository.UserRepository;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -57,13 +56,37 @@ public class EntityMapper {
         .build();
   }
 
+  public PostEntity mapP(PostDto postDto, UserEntity userEntity) {
+    return PostEntity.builder()
+        .forumPostId(postDto.getId())
+        .forumUserId(postDto.getUserId())
+        .title(postDto.getTitle())
+        .body(postDto.getBody())
+        .userEntity(userEntity)
+        .build();
+  }
+
+  public CommentEntity mapC(CommentDto commentDto, PostEntity postEntity) {
+    return CommentEntity.builder()
+        .forumPostId(commentDto.getPostId())
+        .name(commentDto.getName())
+        .email(commentDto.getEmail())
+        .body(commentDto.getBody())
+        .postEntity(postEntity)
+        .build();
+  }
+
   public List<UserEntity> mapAndSave(
       List<UserDto> userDtos, List<PostDto> postDtos, List<CommentDto> commentDtos) {
+
     List<UserEntity> userEntities = new LinkedList<>();
     List<AddressEntity> addressEntities = new LinkedList<>();
     List<CompanyEntity> companyEntities = new LinkedList<>();
+    List<PostEntity> postEntities = new LinkedList<>();
+    List<CommentEntity> commentEntities = new LinkedList<>();
+
     userDtos.stream()
-        .map(
+        .forEach(
             u -> {
               UserEntity userEntity = this.mapU(u);
               userEntities.add(userEntity);
@@ -75,58 +98,80 @@ public class EntityMapper {
               CompanyEntity companyEntity = this.mapC(u);
               companyEntity.setUserEntity(userEntity);
               companyEntities.add(companyEntity);
-              return userEntity;
-            })
-        .collect(Collectors.toList());
+
+              postDtos.stream()
+                  .filter(p -> p.getUserId().equals(userEntity.getForumUserId()))
+                  .forEach(
+                      p -> {
+                        PostEntity postEntity = this.mapP(p, userEntity);
+                        postEntities.add(postEntity);
+
+                        commentDtos.stream()
+                            .filter(c -> c.getPostId().equals(postEntity.getForumPostId()))
+                            .forEach(
+                                c -> {
+                                  CommentEntity commentEntity = this.mapC(c, postEntity);
+                                  commentEntities.add(commentEntity);
+                                });
+                      });
+            });
     this.userRepository.saveAll(userEntities);
     this.addressRepository.saveAll(addressEntities);
     this.companyRepository.saveAll(companyEntities);
-
-    List<PostEntity> postEntities =
-        postDtos.stream()
-            .map(
-                p -> {
-                  UserEntity matchedUser =
-                      userEntities.stream()
-                          .filter(u -> u.getForumUserId().equals(p.getUserId()))
-                          .findFirst()
-                          .get();
-                  PostEntity postEntity =
-                      PostEntity.builder()
-                          .forumPostId(p.getId())
-                          .forumUserId(p.getUserId())
-                          .title(p.getTitle())
-                          .body(p.getBody())
-                          .userEntity(matchedUser)
-                          .build();
-                  return postEntity;
-                })
-            .collect(Collectors.toList());
-
-    List<CommentEntity> commentEntities =
-        commentDtos.stream()
-            .map(
-                c -> {
-                  PostEntity matchedPost =
-                      postEntities.stream()
-                          .filter(p -> p.getForumPostId().equals(c.getPostId()))
-                          .findFirst()
-                          .get();
-                  CommentEntity commentEntity =
-                      CommentEntity.builder()
-                          .forumPostId(c.getPostId())
-                          .name(c.getName())
-                          .email(c.getEmail())
-                          .body(c.getBody())
-                          .postEntity(matchedPost)
-                          .build();
-                  return commentEntity;
-                })
-            .collect(Collectors.toList());
-
     this.postRepository.saveAll(postEntities);
     this.commentRepository.saveAll(commentEntities);
 
     return userEntities;
+  }
+
+  public UserEntity mapNu(UserDto userDto, Long tbrId) {
+    return UserEntity.builder()
+        .id(tbrId)
+        .forumUserId(userDto.getId())
+        .name(userDto.getName())
+        .username(userDto.getUsername())
+        .email(userDto.getEmail())
+        .phone(userDto.getPhone())
+        .website(userDto.getWebsite())
+        .build();
+  }
+
+  public AddressEntity mapNa(UserDto userDto, Long tbrId) {
+    return AddressEntity.builder()
+        .id(tbrId)
+        .street(userDto.getAddressDto().getStreet())
+        .suite(userDto.getAddressDto().getSuite())
+        .city(userDto.getAddressDto().getCity())
+        .zipcode(userDto.getAddressDto().getZipcode())
+        .lat(userDto.getAddressDto().getGeoDto().getLat())
+        .lng(userDto.getAddressDto().getGeoDto().getLng())
+        .build();
+  }
+
+  public CompanyEntity mapNc(UserDto userDto, Long tbrId) {
+    return CompanyEntity.builder()
+        .id(tbrId)
+        .name(userDto.getCompanyDto().getName())
+        .catchPhrase(userDto.getCompanyDto().getCatchPhrase())
+        .bs(userDto.getCompanyDto().getBs())
+        .build();
+  }
+
+  public PostEntity mapNp(PostDto postDto, Long forumUserId) {
+    return PostEntity.builder()
+        .forumUserId(forumUserId)
+        .forumPostId(postDto.getId())
+        .title(postDto.getTitle())
+        .body(postDto.getBody())
+        .build();
+  }
+
+  public CommentEntity mapNcm(CommentDto commentDto, Long forumPostId) {
+    return CommentEntity.builder()
+        .forumPostId(commentDto.getPostId())
+        .name(commentDto.getName())
+        .email(commentDto.getEmail())
+        .body(commentDto.getBody())
+        .build();
   }
 }

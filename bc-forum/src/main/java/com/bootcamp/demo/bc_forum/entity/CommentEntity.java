@@ -1,5 +1,6 @@
 package com.bootcamp.demo.bc_forum.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,14 +27,17 @@ public class CommentEntity {
   private Long id;
 
   private Long forumPostId;
+
   private String name;
   private String email;
 
   @Column(length = 1000)
+  @Setter
   private String body;
 
   @ManyToOne
   @JoinColumn(name = "post_id", nullable = false)
   @Setter
+  @JsonProperty(value = "forum_post")
   private PostEntity postEntity;
 }

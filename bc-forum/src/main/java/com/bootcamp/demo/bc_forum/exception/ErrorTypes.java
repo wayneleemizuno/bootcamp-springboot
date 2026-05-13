@@ -6,9 +6,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ErrorTypes {
-  USER_NOT_FOUND("1", "User not found."),
-  INVALID_ID("2", "Invalid ID"),
-  RT_ERROR("3", "RestTemplate Error - JsonPlaceHolder.");
+  TARGET_NOT_FOUND("1", "target not found."),
+  INVALID_ID("2", "Invalid ID");
 
   private String code;
   private String message;

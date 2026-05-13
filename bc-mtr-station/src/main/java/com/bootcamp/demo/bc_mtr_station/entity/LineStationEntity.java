@@ -1,6 +1,5 @@
 package com.bootcamp.demo.bc_mtr_station.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,13 +26,11 @@ public class LineStationEntity {
 
   @Setter
   @ManyToOne
-  @Column(name = "line", nullable = false)
-  @JoinColumn
+  @JoinColumn(name = "line", nullable = false)
   private LineEntity lineEntity;
 
   @Setter
   @ManyToOne
-  @Column(name = "station", nullable = false)
-  @JoinColumn
+  @JoinColumn(name = "station", nullable = false)
   private StationEntity stationEntity;
 }

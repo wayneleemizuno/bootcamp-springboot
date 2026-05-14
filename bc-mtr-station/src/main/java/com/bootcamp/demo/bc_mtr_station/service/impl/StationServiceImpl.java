@@ -1,12 +1,14 @@
 package com.bootcamp.demo.bc_mtr_station.service.impl;
 
 import com.bootcamp.demo.bc_mtr_station.config.AppConfig;
+import com.bootcamp.demo.bc_mtr_station.dto.DepartureDto;
 import com.bootcamp.demo.bc_mtr_station.dto.NewStationReq;
-import com.bootcamp.demo.bc_mtr_station.dto.TrainDto;
 import com.bootcamp.demo.bc_mtr_station.entity.LineEntity;
 import com.bootcamp.demo.bc_mtr_station.entity.LineStationEntity;
 import com.bootcamp.demo.bc_mtr_station.entity.StationEntity;
 import com.bootcamp.demo.bc_mtr_station.exception.DataUnavailableException;
+import com.bootcamp.demo.bc_mtr_station.exception.NoSuchLineException;
+import com.bootcamp.demo.bc_mtr_station.exception.NoSuchStationException;
 import com.bootcamp.demo.bc_mtr_station.mapper.DtoMapper;
 import com.bootcamp.demo.bc_mtr_station.mapper.EntityMapper;
 import com.bootcamp.demo.bc_mtr_station.model.TrainTimeDTO;
@@ -16,8 +18,10 @@ import com.bootcamp.demo.bc_mtr_station.repository.LineStationRepository;
 import com.bootcamp.demo.bc_mtr_station.repository.StationRepository;
 import com.bootcamp.demo.bc_mtr_station.service.StationService;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,6 +60,8 @@ public class StationServiceImpl implements StationService {
 
   @Override
   public List<StationEntity> getStationsByLine(String lineCode) {
+    if (!this.lineRepository.findByCode(lineCode.toUpperCase()).isPresent())
+      throw new NoSuchLineException();
     return this.lineStationRepository.findAll().stream()
         .filter(ls -> ls.getLineEntity().getCode().toLowerCase().equals(lineCode.toLowerCase()))
         .map(ls -> ls.getStationEntity())
@@ -64,6 +70,9 @@ public class StationServiceImpl implements StationService {
 
   @Override
   public LineStationEntity addStation(NewStationReq newStationReq) {
+    if (!this.lineRepository.findByCode(newStationReq.getLineCode().toUpperCase()).isPresent())
+      throw new NoSuchLineException();
+
     StationEntity newStation =
         this.entityMapper.map(newStationReq.getCode(), newStationReq.getName());
 
@@ -77,9 +86,12 @@ public class StationServiceImpl implements StationService {
   @Override
   @Transactional
   public StationEntity deleteStation(String code) {
-    StationEntity target = this.stationRepository.findByCode(code).get();
+    if (!this.stationRepository.findByCode(code.toUpperCase()).isPresent())
+      throw new NoSuchStationException();
+
+    StationEntity target = this.stationRepository.findByCode(code.toUpperCase()).get();
     this.lineStationRepository.deleteByStationEntity(target);
-    this.stationRepository.deleteByCode(code);
+    this.stationRepository.deleteByCode(code.toUpperCase());
     return target;
   }
 
@@ -90,35 +102,65 @@ public class StationServiceImpl implements StationService {
             + lineCode.toUpperCase()
             + "&sta="
             + stationCode.toUpperCase();
-    System.out.println("URL" + url);
     return this.restTemplate.getForObject(url, TrainTimeDTO.class);
   }
 
   @Override
-  public TrainDto getEarliestTrain(String lineCode, String stationCode) {
-    if (this.getTrainSchedule(lineCode, stationCode).getData() == null)
-      throw new DataUnavailableException();
+  public DepartureDto getEarliestTrain(String lineCode, String stationCode) {
+    TrainTimeDTO trainTimeDTO =
+        this.getTrainSchedule(lineCode.toUpperCase(), stationCode.toUpperCase());
 
+    if (trainTimeDTO.getData() == null) throw new DataUnavailableException();
+
+    List<DepartureDto.Train> earliestTrains = new ArrayList<>();
     List<DepartureDetails> up =
-        this.getTrainSchedule(lineCode, stationCode)
+        trainTimeDTO
             .getData()
             .get(lineCode.toUpperCase() + "-" + stationCode.toUpperCase())
             .getUpDepartures();
 
     List<DepartureDetails> down =
-        this.getTrainSchedule(lineCode, stationCode)
+        trainTimeDTO
             .getData()
             .get(lineCode.toUpperCase() + "-" + stationCode.toUpperCase())
             .getDownDepartures();
 
-    TrainTimeDTO.DepartureDetails firstDept =
-        Stream.concat(
-                up == null ? Stream.empty() : up.stream(),
-                down == null ? Stream.empty() : down.stream())
-            .sorted(Comparator.comparing(DepartureDetails::getTime))
-            .collect(Collectors.toList())
-            .getFirst();
+    HashSet<String> destinations =
+        (HashSet<String>)
+            Stream.concat(
+                    up == null ? Stream.empty() : up.stream(),
+                    down == null ? Stream.empty() : down.stream())
+                .collect(Collectors.toList())
+                .stream()
+                .map(e -> e.getDest())
+                .collect(Collectors.toSet());
 
-    return this.dtoMapper.map(firstDept, stationCode);
+    if (up != null)
+      destinations.stream()
+          .forEach(
+              dest -> {
+                List<DepartureDetails> Departures =
+                    up.stream()
+                        .filter(dep -> dep.getDest().equals(dest))
+                        .sorted(Comparator.comparing(DepartureDetails::getTime))
+                        .collect(Collectors.toList());
+                if (!Departures.isEmpty())
+                  earliestTrains.add(this.dtoMapper.mapFirstUpTrain(Departures.get(0), dest));
+              });
+
+    if (down != null)
+      destinations.stream()
+          .forEach(
+              dest -> {
+                List<DepartureDetails> Departures =
+                    down.stream()
+                        .filter(dep -> dep.getDest().equalsIgnoreCase(dest))
+                        .sorted(Comparator.comparing(DepartureDetails::getTime))
+                        .collect(Collectors.toList());
+                if (!Departures.isEmpty())
+                  earliestTrains.add(this.dtoMapper.mapFirstDownTrain(Departures.get(0), dest));
+              });
+
+    return this.dtoMapper.map(trainTimeDTO, stationCode, earliestTrains);
   }
 }

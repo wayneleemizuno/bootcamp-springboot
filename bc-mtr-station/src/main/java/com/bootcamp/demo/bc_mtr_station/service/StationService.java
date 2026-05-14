@@ -1,7 +1,7 @@
 package com.bootcamp.demo.bc_mtr_station.service;
 
+import com.bootcamp.demo.bc_mtr_station.dto.DepartureDto;
 import com.bootcamp.demo.bc_mtr_station.dto.NewStationReq;
-import com.bootcamp.demo.bc_mtr_station.dto.TrainDto;
 import com.bootcamp.demo.bc_mtr_station.entity.LineStationEntity;
 import com.bootcamp.demo.bc_mtr_station.entity.StationEntity;
 import com.bootcamp.demo.bc_mtr_station.model.TrainTimeDTO;
@@ -19,5 +19,5 @@ public interface StationService {
 
   TrainTimeDTO getTrainSchedule(String lineCode, String stationCode);
 
-  TrainDto getEarliestTrain(String lineCode, String stationCode);
+  DepartureDto getEarliestTrain(String lineCode, String stationCode);
 }

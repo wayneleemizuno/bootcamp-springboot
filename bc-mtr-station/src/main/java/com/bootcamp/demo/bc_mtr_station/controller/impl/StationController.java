@@ -1,8 +1,8 @@
 package com.bootcamp.demo.bc_mtr_station.controller.impl;
 
 import com.bootcamp.demo.bc_mtr_station.controller.StationOperation;
+import com.bootcamp.demo.bc_mtr_station.dto.DepartureDto;
 import com.bootcamp.demo.bc_mtr_station.dto.NewStationReq;
-import com.bootcamp.demo.bc_mtr_station.dto.TrainDto;
 import com.bootcamp.demo.bc_mtr_station.entity.LineStationEntity;
 import com.bootcamp.demo.bc_mtr_station.entity.StationEntity;
 import com.bootcamp.demo.bc_mtr_station.model.TrainTimeDTO;
@@ -42,7 +42,7 @@ public class StationController implements StationOperation {
   }
 
   @Override
-  public TrainDto getEarliestTrain(String lineCode, String stationCode) {
+  public DepartureDto getEarliestTrain(String lineCode, String stationCode) {
     return this.stationService.getEarliestTrain(lineCode, stationCode);
   }
 }

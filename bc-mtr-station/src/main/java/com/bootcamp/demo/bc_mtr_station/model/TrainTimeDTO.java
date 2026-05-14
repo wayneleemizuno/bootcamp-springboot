@@ -1,7 +1,6 @@
 package com.bootcamp.demo.bc_mtr_station.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,11 +34,11 @@ public class TrainTimeDTO {
     @JsonProperty("curr_time")
     private LocalDateTime currTime;
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
+    // @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonProperty("UP")
     private List<DepartureDetails> upDepartures;
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
+    // @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonProperty("DOWN")
     private List<DepartureDetails> downDepartures;
   }

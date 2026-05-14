@@ -1,8 +1,5 @@
 package com.bootcamp.demo.bc_forum.service.impl;
 
-import com.bootcamp.demo.bc_forum.config.CommentAPI;
-import com.bootcamp.demo.bc_forum.config.PostAPI;
-import com.bootcamp.demo.bc_forum.config.UserAPI;
 import com.bootcamp.demo.bc_forum.dto.CommentReq;
 import com.bootcamp.demo.bc_forum.dto.PostCommentDto;
 import com.bootcamp.demo.bc_forum.dto.UserCommentDto;
@@ -24,13 +21,14 @@ import com.bootcamp.demo.bc_forum.repository.CompanyRepository;
 import com.bootcamp.demo.bc_forum.repository.PostRepository;
 import com.bootcamp.demo.bc_forum.repository.UserRepository;
 import com.bootcamp.demo.bc_forum.service.ForumService;
-import jakarta.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class ForumServiceImpl implements ForumService {
@@ -41,27 +39,56 @@ public class ForumServiceImpl implements ForumService {
   @Autowired AddressRepository addressRepository;
   @Autowired DtoMapper dtoMapper;
   @Autowired RestTemplate restTemplate;
-  @Autowired UserAPI userAPI;
-  @Autowired PostAPI postAPI;
-  @Autowired CommentAPI commentAPI;
   @Autowired EntityMapper entityMapper;
+
+  @Value("${api.jsonplaceholder.domain}")
+  private String domain;
+
+  @Value("${api.jsonplaceholder.path.user}")
+  private String userPath;
+
+  @Value("${api.jsonplaceholder.path.post}")
+  private String postPath;
+
+  @Value("${api.jsonplaceholder.path.comment}")
+  private String commentPath;
 
   @Override
   public List<UserDto> getUsers() {
-    UserDto[] userDtos = this.restTemplate.getForObject(this.userAPI.getUrl(), UserDto[].class);
+    String url =
+        UriComponentsBuilder.newInstance()
+            .scheme("https")
+            .host(this.domain)
+            .path(this.userPath)
+            .build()
+            .toUriString();
+    UserDto[] userDtos = this.restTemplate.getForObject(url, UserDto[].class);
     return Arrays.asList(userDtos);
   }
 
   @Override
   public List<PostDto> getPosts() {
-    PostDto[] postDtos = this.restTemplate.getForObject(this.postAPI.getUrl(), PostDto[].class);
+    String url =
+        UriComponentsBuilder.newInstance()
+            .scheme("https")
+            .host(this.domain)
+            .path(this.postPath)
+            .build()
+            .toUriString();
+    PostDto[] postDtos = this.restTemplate.getForObject(url, PostDto[].class);
     return Arrays.asList(postDtos);
   }
 
   @Override
   public List<CommentDto> getComments() {
-    CommentDto[] CommentDtos =
-        this.restTemplate.getForObject(this.commentAPI.getUrl(), CommentDto[].class);
+    String url =
+        UriComponentsBuilder.newInstance()
+            .scheme("https")
+            .host(this.domain)
+            .path(this.commentPath)
+            .build()
+            .toUriString();
+    CommentDto[] CommentDtos = this.restTemplate.getForObject(url, CommentDto[].class);
     return Arrays.asList(CommentDtos);
   }
 
@@ -164,10 +191,10 @@ public class ForumServiceImpl implements ForumService {
     return this.postRepository.save(newPost);
   }
 
-  @Transactional
   @Override
   public PostEntity deletePost(Long postId) {
     PostEntity targetPost = this.postRepository.findByForumPostId(postId).get();
+    this.commentRepository.deleteByForumPostId(postId);
     this.postRepository.deleteByForumPostId(postId);
     return targetPost;
   }

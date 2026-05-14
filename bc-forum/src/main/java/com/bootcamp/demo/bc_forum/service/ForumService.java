@@ -9,6 +9,7 @@ import com.bootcamp.demo.bc_forum.entity.UserEntity;
 import com.bootcamp.demo.bc_forum.model.CommentDto;
 import com.bootcamp.demo.bc_forum.model.PostDto;
 import com.bootcamp.demo.bc_forum.model.UserDto;
+import jakarta.transaction.Transactional;
 import java.util.List;
 
 public interface ForumService {
@@ -28,14 +29,17 @@ public interface ForumService {
 
   UserEntity getDbUserById(Long forumUserId);
 
+  @Transactional
   UserEntity replaceDbUser(UserDto userDto, Long tbrId);
 
   List<PostEntity> getAllDbPosts();
 
   List<PostEntity> getPostsByUserId(Long forumUserId);
 
+  @Transactional
   PostEntity addPost(PostDto postDto, Long forumUserId);
 
+  @Transactional
   PostEntity deletePost(Long forumPostId);
 
   List<CommentEntity> getAllComments();

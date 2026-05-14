@@ -13,7 +13,6 @@ import com.bootcamp.demo.bc_forum.repository.CommentRepository;
 import com.bootcamp.demo.bc_forum.repository.CompanyRepository;
 import com.bootcamp.demo.bc_forum.repository.PostRepository;
 import com.bootcamp.demo.bc_forum.repository.UserRepository;
-import java.util.LinkedList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -78,50 +77,38 @@ public class EntityMapper {
 
   public List<UserEntity> mapAndSave(
       List<UserDto> userDtos, List<PostDto> postDtos, List<CommentDto> commentDtos) {
-
-    List<UserEntity> userEntities = new LinkedList<>();
-    List<AddressEntity> addressEntities = new LinkedList<>();
-    List<CompanyEntity> companyEntities = new LinkedList<>();
-    List<PostEntity> postEntities = new LinkedList<>();
-    List<CommentEntity> commentEntities = new LinkedList<>();
-
     userDtos.stream()
         .forEach(
             u -> {
               UserEntity userEntity = this.mapU(u);
-              userEntities.add(userEntity);
+              this.userRepository.save(userEntity);
 
               AddressEntity addressEntity = this.mapA(u);
               addressEntity.setUserEntity(userEntity);
-              addressEntities.add(addressEntity);
+              this.addressRepository.save(addressEntity);
 
               CompanyEntity companyEntity = this.mapC(u);
               companyEntity.setUserEntity(userEntity);
-              companyEntities.add(companyEntity);
+              this.companyRepository.save(companyEntity);
 
               postDtos.stream()
                   .filter(p -> p.getUserId().equals(userEntity.getForumUserId()))
                   .forEach(
                       p -> {
                         PostEntity postEntity = this.mapP(p, userEntity);
-                        postEntities.add(postEntity);
+                        this.postRepository.save(postEntity);
 
                         commentDtos.stream()
                             .filter(c -> c.getPostId().equals(postEntity.getForumPostId()))
                             .forEach(
                                 c -> {
                                   CommentEntity commentEntity = this.mapC(c, postEntity);
-                                  commentEntities.add(commentEntity);
+                                  this.commentRepository.save(commentEntity);
                                 });
                       });
             });
-    this.userRepository.saveAll(userEntities);
-    this.addressRepository.saveAll(addressEntities);
-    this.companyRepository.saveAll(companyEntities);
-    this.postRepository.saveAll(postEntities);
-    this.commentRepository.saveAll(commentEntities);
 
-    return userEntities;
+    return this.userRepository.findAll();
   }
 
   public UserEntity mapNu(UserDto userDto, Long tbrId) {

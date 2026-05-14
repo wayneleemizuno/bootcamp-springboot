@@ -1,7 +1,10 @@
 package com.bootcamp.demo.bc_mtr_station.service;
 
+import com.bootcamp.demo.bc_mtr_station.dto.NewStationReq;
 import com.bootcamp.demo.bc_mtr_station.dto.TrainDto;
+import com.bootcamp.demo.bc_mtr_station.entity.LineStationEntity;
 import com.bootcamp.demo.bc_mtr_station.entity.StationEntity;
+import com.bootcamp.demo.bc_mtr_station.model.TrainTimeDTO;
 import java.util.List;
 import java.util.Map;
 
@@ -10,9 +13,11 @@ public interface StationService {
 
   List<StationEntity> getStationsByLine(String lineCode);
 
-  StationEntity addStation();
+  LineStationEntity addStation(NewStationReq newStationReq);
 
   StationEntity deleteStation(String code);
 
-  TrainDto getEarliestTrain(String stationCode);
+  TrainTimeDTO getTrainSchedule(String lineCode, String stationCode);
+
+  TrainDto getEarliestTrain(String lineCode, String stationCode);
 }

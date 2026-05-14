@@ -3,7 +3,9 @@ package com.bootcamp.demo.bc_mtr_station.controller.impl;
 import com.bootcamp.demo.bc_mtr_station.controller.StationOperation;
 import com.bootcamp.demo.bc_mtr_station.dto.NewStationReq;
 import com.bootcamp.demo.bc_mtr_station.dto.TrainDto;
+import com.bootcamp.demo.bc_mtr_station.entity.LineStationEntity;
 import com.bootcamp.demo.bc_mtr_station.entity.StationEntity;
+import com.bootcamp.demo.bc_mtr_station.model.TrainTimeDTO;
 import com.bootcamp.demo.bc_mtr_station.service.StationService;
 import java.util.List;
 import java.util.Map;
@@ -21,25 +23,26 @@ public class StationController implements StationOperation {
 
   @Override
   public List<StationEntity> getStationsByLine(String lineCode) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getStationsByLine'");
+    return this.stationService.getStationsByLine(lineCode);
   }
 
   @Override
-  public StationEntity addStation(NewStationReq newStationReq) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'addStation'");
+  public LineStationEntity addStation(NewStationReq newStationReq) {
+    return this.stationService.addStation(newStationReq);
   }
 
   @Override
   public StationEntity deleteStation(String code) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'deleteStation'");
+    return this.stationService.deleteStation(code);
   }
 
   @Override
-  public TrainDto getEarliestTrain(String stationCode) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getEarliestTrain'");
+  public TrainTimeDTO getTrainSchedule(String lineCode, String stationCode) {
+    return this.stationService.getTrainSchedule(lineCode, stationCode);
+  }
+
+  @Override
+  public TrainDto getEarliestTrain(String lineCode, String stationCode) {
+    return this.stationService.getEarliestTrain(lineCode, stationCode);
   }
 }

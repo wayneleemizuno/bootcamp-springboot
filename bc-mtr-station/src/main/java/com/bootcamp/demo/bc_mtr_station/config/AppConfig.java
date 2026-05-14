@@ -1,4 +1,4 @@
-package com.bootcamp.demo.bc_forum.config;
+package com.bootcamp.demo.bc_mtr_station.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

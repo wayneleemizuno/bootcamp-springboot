@@ -6,4 +6,5 @@ import lombok.Getter;
 public class NewStationReq {
   String code;
   String name;
+  String lineCode;
 }

@@ -22,4 +22,12 @@ public class GlobalExceptionHandler {
         .message(ErrorTypes.INVALID_ID.getMessage())
         .build();
   }
+
+  @ExceptionHandler(NullPointerException.class)
+  public ErrorDto handleNPE() {
+    return ErrorDto.builder()
+        .code(ErrorTypes.NULL_VALUE.getCode())
+        .message(ErrorTypes.NULL_VALUE.getMessage())
+        .build();
+  }
 }

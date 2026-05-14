@@ -7,7 +7,8 @@ import lombok.Getter;
 @Getter
 public enum ErrorTypes {
   TARGET_NOT_FOUND("1", "target not found."),
-  INVALID_ID("2", "Invalid ID");
+  INVALID_ID("2", "Invalid ID"),
+  NULL_VALUE("3", "Null Value");
 
   private String code;
   private String message;

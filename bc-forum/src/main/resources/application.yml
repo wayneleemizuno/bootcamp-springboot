@@ -7,3 +7,11 @@ spring.datasource:
 spring.jpa:
   show-sql: true
   hibernate.ddl-auto: update
+
+api:
+  jsonplaceholder:
+    domain: "jsonplaceholder.typicode.com"
+    path:
+      user: "/users"
+      post: "/posts"
+      comment: "/comments"

@@ -71,6 +71,11 @@
 			<artifactId>commons-text</artifactId>
 			<version>1.12.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-session-data-redis</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

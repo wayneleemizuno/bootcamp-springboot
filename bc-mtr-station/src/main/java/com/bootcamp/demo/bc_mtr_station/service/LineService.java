@@ -8,4 +8,6 @@ public interface LineService {
   List<LineEntity> getAllLines();
 
   LineSignalDto getLineSignal(String lineCode);
+
+  List<LineSignalDto> getAllLineSignals();
 }

@@ -7,24 +7,16 @@ import com.bootcamp.demo.bc_mtr_station.repository.LineRepository;
 import com.bootcamp.demo.bc_mtr_station.repository.LineStationRepository;
 import com.bootcamp.demo.bc_mtr_station.repository.StationRepository;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AppStarter implements CommandLineRunner {
 
-  private final LineRepository lineRepository;
-  private final StationRepository stationRepository;
-  private final LineStationRepository lineStationRepository;
-
-  public AppStarter(
-      LineRepository lineRepository,
-      StationRepository stationRepository,
-      LineStationRepository lineStationRepository) {
-    this.lineRepository = lineRepository;
-    this.stationRepository = stationRepository;
-    this.lineStationRepository = lineStationRepository;
-  }
+  @Autowired private LineRepository lineRepository;
+  @Autowired private StationRepository stationRepository;
+  @Autowired private LineStationRepository lineStationRepository;
 
   @Override
   public void run(String... args) {

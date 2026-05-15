@@ -5,5 +5,12 @@ spring.datasource:
   password: "admin1234"
 
 spring.jpa:
-  show-sql: true
+  show-sql: false
   hibernate.ddl-auto: update
+
+api:
+  gov:
+    domain: "rt.data.gov.hk"
+    version: "/v1"
+    mtr:
+      schedule: "/transport/mtr/getSchedule.php"

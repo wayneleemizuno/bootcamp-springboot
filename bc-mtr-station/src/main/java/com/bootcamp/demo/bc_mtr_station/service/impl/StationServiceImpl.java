@@ -27,43 +27,52 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class StationServiceImpl implements StationService {
-  @Autowired LineRepository lineRepository;
-  @Autowired StationRepository stationRepository;
-  @Autowired LineStationRepository lineStationRepository;
-  @Autowired EntityMapper entityMapper;
-  @Autowired AppConfig appConfig;
-  @Autowired RestTemplate restTemplate;
-  @Autowired DtoMapper dtoMapper;
+  @Autowired private LineRepository lineRepository;
+  @Autowired private StationRepository stationRepository;
+  @Autowired private LineStationRepository lineStationRepository;
+  @Autowired private EntityMapper entityMapper;
+  @Autowired private AppConfig appConfig;
+  @Autowired private RestTemplate restTemplate;
+  @Autowired private DtoMapper dtoMapper;
+  @Autowired private RedisTemplate<String, String> redisTemplate;
+
+  @Value("${api.gov.domain}")
+  private String domain;
+
+  @Value("${api.gov.version}")
+  private String ver;
+
+  @Value("${api.gov.mtr.schedule}")
+  private String path;
 
   @Override
   public Map<String, List<StationEntity>> getAllStations() {
     List<LineEntity> lines = this.lineRepository.findAll();
-    List<LineStationEntity> lineStationEntities = this.lineStationRepository.findAll();
     Map<String, List<StationEntity>> stationMap = new HashMap<String, List<StationEntity>>();
     lines.stream()
         .forEach(
             line -> {
-              List<StationEntity> matchedStations =
-                  lineStationEntities.stream()
-                      .filter(ls -> ls.getLineEntity().getCode().equals(line.getCode()))
-                      .map(ls -> ls.getStationEntity())
-                      .collect(Collectors.toList());
+              List<StationEntity> matchedStations = this.getStationsByLine(line.getCode());
               stationMap.put(line.getName(), matchedStations);
             });
     return stationMap;
   }
 
+  // TD: Re-write service - cache (redis)
   @Override
   public List<StationEntity> getStationsByLine(String lineCode) {
     if (!this.lineRepository.findByCode(lineCode.toUpperCase()).isPresent())
       throw new NoSuchLineException();
     return this.lineStationRepository.findAll().stream()
-        .filter(ls -> ls.getLineEntity().getCode().toLowerCase().equals(lineCode.toLowerCase()))
+        .filter(ls -> ls.getLineEntity().getCode().equalsIgnoreCase(lineCode))
         .map(ls -> ls.getStationEntity())
         .collect(Collectors.toList());
   }
@@ -97,16 +106,35 @@ public class StationServiceImpl implements StationService {
 
   @Override
   public TrainTimeDTO getTrainSchedule(String lineCode, String stationCode) {
+    if (!this.lineRepository.findByCode(lineCode.toUpperCase()).isPresent()) {
+      throw new NoSuchLineException();
+    } else {
+      if (!this.stationRepository.findByCode(stationCode.toUpperCase()).isPresent())
+        throw new NoSuchStationException();
+    }
+
     String url =
-        "https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php?line="
-            + lineCode.toUpperCase()
-            + "&sta="
-            + stationCode.toUpperCase();
+        UriComponentsBuilder.newInstance()
+            .scheme("https")
+            .host(this.domain)
+            .pathSegment(this.ver)
+            .path(this.path)
+            .queryParam("line", lineCode.toUpperCase())
+            .queryParam("sta", stationCode.toUpperCase())
+            .build()
+            .toUriString();
     return this.restTemplate.getForObject(url, TrainTimeDTO.class);
   }
 
   @Override
   public DepartureDto getEarliestTrain(String lineCode, String stationCode) {
+    if (!this.lineRepository.findByCode(lineCode.toUpperCase()).isPresent()) {
+      throw new NoSuchLineException();
+    } else {
+      if (!this.stationRepository.findByCode(stationCode.toUpperCase()).isPresent())
+        throw new NoSuchStationException();
+    }
+
     TrainTimeDTO trainTimeDTO =
         this.getTrainSchedule(lineCode.toUpperCase(), stationCode.toUpperCase());
 
@@ -133,7 +161,7 @@ public class StationServiceImpl implements StationService {
                 .collect(Collectors.toList())
                 .stream()
                 .map(e -> e.getDest())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(HashSet::new));
 
     if (up != null)
       destinations.stream()

@@ -1,7 +1,6 @@
 package com.bootcamp.demo.bc_mtr_station.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,10 +9,10 @@ import lombok.Getter;
 @Getter
 public class DepartureDto {
   @JsonProperty("curr_time")
-  private LocalDateTime currentTime;
+  private String currentTime;
 
   @JsonProperty("sys_time")
-  private LocalDateTime systemTime;
+  private String systemTime;
 
   @JsonProperty("current_station")
   private String currentStation;
@@ -26,7 +25,7 @@ public class DepartureDto {
     private String destination;
 
     @JsonProperty("arrival_time")
-    private LocalDateTime arrivalTime;
+    private String arrivalTime;
 
     private String direction;
   }

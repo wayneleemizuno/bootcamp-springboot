@@ -2,6 +2,7 @@ package com.bootcamp.demo.bc_mtr_station.controller;
 
 import com.bootcamp.demo.bc_mtr_station.dto.DepartureDto;
 import com.bootcamp.demo.bc_mtr_station.dto.NewStationReq;
+import com.bootcamp.demo.bc_mtr_station.dto.StationResDto;
 import com.bootcamp.demo.bc_mtr_station.entity.LineStationEntity;
 import com.bootcamp.demo.bc_mtr_station.entity.StationEntity;
 import com.bootcamp.demo.bc_mtr_station.model.TrainTimeDTO;
@@ -15,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 public interface StationOperation {
   @GetMapping(value = "/stations")
-  Map<String, List<StationEntity>> getAllStations();
+  Map<String, List<StationResDto>> getAllStations();
 
   @GetMapping(value = "/stations/line")
-  List<StationEntity> getStationsByLine(@RequestParam String lineCode);
+  List<StationResDto> getStationsByLine(@RequestParam String lineCode);
 
   @PostMapping(value = "/station")
   LineStationEntity addStation(@RequestBody NewStationReq newStationReq);

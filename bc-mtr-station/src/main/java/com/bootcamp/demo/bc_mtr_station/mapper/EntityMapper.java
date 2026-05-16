@@ -7,6 +7,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class EntityMapper {
+  public LineEntity mapLine(String code, String name) {
+    return LineEntity.builder().code(code.toUpperCase()).name(name).build();
+  }
+
   public StationEntity map(String code, String name) {
     return StationEntity.builder().code(code.toUpperCase()).name(name).build();
   }

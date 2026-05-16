@@ -8,5 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface LineStationRepository extends JpaRepository<LineStationEntity, Long> {
   List<LineStationEntity> findByStationEntity(StationEntity stationEntity);
 
+  List<LineStationEntity> findAllByLineEntityCodeIgnoreCase(String lineCode);
+
   void deleteByStationEntity(StationEntity stationEntity);
 }

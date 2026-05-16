@@ -20,7 +20,7 @@ public class AppConfig {
     RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
     redisTemplate.setConnectionFactory(factory);
     redisTemplate.setKeySerializer(RedisSerializer.string());
-    redisTemplate.setValueSerializer(RedisSerializer.json());
+    redisTemplate.setValueSerializer(RedisSerializer.string());
     redisTemplate.afterPropertiesSet();
     return redisTemplate;
   }

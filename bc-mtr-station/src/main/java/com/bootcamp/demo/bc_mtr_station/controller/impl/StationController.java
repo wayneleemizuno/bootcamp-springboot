@@ -3,6 +3,7 @@ package com.bootcamp.demo.bc_mtr_station.controller.impl;
 import com.bootcamp.demo.bc_mtr_station.controller.StationOperation;
 import com.bootcamp.demo.bc_mtr_station.dto.DepartureDto;
 import com.bootcamp.demo.bc_mtr_station.dto.NewStationReq;
+import com.bootcamp.demo.bc_mtr_station.dto.StationResDto;
 import com.bootcamp.demo.bc_mtr_station.entity.LineStationEntity;
 import com.bootcamp.demo.bc_mtr_station.entity.StationEntity;
 import com.bootcamp.demo.bc_mtr_station.model.TrainTimeDTO;
@@ -17,12 +18,12 @@ public class StationController implements StationOperation {
   @Autowired StationService stationService;
 
   @Override
-  public Map<String, List<StationEntity>> getAllStations() {
+  public Map<String, List<StationResDto>> getAllStations() {
     return this.stationService.getAllStations();
   }
 
   @Override
-  public List<StationEntity> getStationsByLine(String lineCode) {
+  public List<StationResDto> getStationsByLine(String lineCode) {
     return this.stationService.getStationsByLine(lineCode);
   }
 

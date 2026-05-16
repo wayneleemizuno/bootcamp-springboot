@@ -8,6 +8,12 @@ spring.jpa:
   show-sql: false
   hibernate.ddl-auto: update
 
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 api:
   gov:
     domain: "rt.data.gov.hk"

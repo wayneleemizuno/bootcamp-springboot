@@ -1,1 +1,60 @@
-# bootcamp-springboot
+# Spring Boot Summary
+
+## Project
+- controller
+  - API entry point
+  - Receive Required Data Type (DTO)
+  - Return Required Data Type (DTO)
+  - Mapper
+- service
+  - Business Logic (Service core logic)
+- model
+  - dto for call api
+  - Business Logic Calculation
+  - system object
+- mapper
+  - Convert data type for DB/DTO
+- dto
+  - For API consumer
+- entity
+  - Entity -> Table, Entity Object -> Table Record(row), List<Entity> -> table data (many rows)
+- repository
+  - per table/entity
+  - DB Agent -> control access
+- config
+  - AppConfig, AppStarter
+- exception
+  - GlobalExceptioHandler
+- application.yml
+  - DB connection (with pom dependency), server port, api URL
+- pom.xml
+  - Spring Web (@Contoller, @GetMapping...etc)
+  - Lombok
+  - DevTools (Auto App Restart Detector)
+  - JPA
+  - DB Driver (Postgersql)
+
+## Annotation/ Concept
+- Controller: @RestController (@Controller + @ResponseBody), @GetMapping, @PostMapping, @PutMapping, @DeleteMapping, @PatchMapping, @PathVariable, @RequestParam, @RequestBody
+- Service: @Service
+- DTO: @Getter, @JsonProperty, @JsonFormat
+- Entity: @Enttiy, @Table, @AllArgsContructor, @NoArgsConstructor, @Builder, @Getter (@Setter), @ManyToOne, @JoinColumn, @Id, @GenerateValue, @Column
+- Repository (interface, extends JpaRepository): @Repository, JPA Method
+- Bean: @Controller, @Service, @Repository, @Component, @Configuration + @Bean
+- @Value -> application.yml
+- url: UriComponentBuilder.class
+- CommandLineRunner -> AppStarter
+- AppConfig -> @Configuration -> Create Bean (built-in class)
+- Mapper -> @Component -> DtoMapper, EntityMapper, etc
+- Call API -> RestTemplate (getForObject, postForObject, etc)
+- JPA/ Hibernate -> generate class implement repository (pom.xml DB driver)
+- Java 8+ -> stream, map.
+- Deserilization (JSON String -> Java Object), Serialization (Java Object -> JSON String)
+- Custom Exception, Custom ErrorDTO, GlobalExceptionHandler (@RestControllerAdvice, @ExceptionHandler)
+- @Autowired (dependency injection): AllArgsConstructor -> App Start (Create Bean + Autowired)
+- API Design - RESTful (standard design for CRUD)
+  - GetMapping /names
+  - GetMapping /name
+  - PostMapping /name
+  - PutMapping /name
+  - DeleteMapping /name

@@ -31,5 +31,5 @@ public interface StationOperation {
   TrainTimeDTO getTrainSchedule(String lineCode, String stationCode);
 
   @GetMapping(value = "/first_dep")
-  DepartureDto getEarliestTrain(@RequestParam String lineCode, @RequestParam String stationCode);
+  DepartureDto getEarliestTrain(@RequestParam String stationCode);
 }

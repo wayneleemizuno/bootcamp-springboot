@@ -10,5 +10,7 @@ public interface LineStationRepository extends JpaRepository<LineStationEntity, 
 
   List<LineStationEntity> findAllByLineEntityCodeIgnoreCase(String lineCode);
 
+  List<LineStationEntity> findAllByStationEntityCodeIgnoreCase(String stationCode);
+
   void deleteByStationEntity(StationEntity stationEntity);
 }

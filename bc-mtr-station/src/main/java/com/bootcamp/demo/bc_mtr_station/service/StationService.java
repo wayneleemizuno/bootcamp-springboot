@@ -20,5 +20,5 @@ public interface StationService {
 
   TrainTimeDTO getTrainSchedule(String lineCode, String stationCode);
 
-  DepartureDto getEarliestTrain(String lineCode, String stationCode);
+  DepartureDto getEarliestTrain(String stationCode);
 }

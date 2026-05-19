@@ -208,45 +208,73 @@ public class StationServiceImpl implements StationService {
   }
 
   @Override
-  public DepartureDto getEarliestTrain(String lineCode, String stationCode) {
-    String normalizedLine = lineCode.toUpperCase();
+  public DepartureDto getEarliestTrain(String stationCode) {
     String normalizedStation = stationCode.toUpperCase();
+    String stationsJson = this.redisTemplate.opsForValue().get(RedisKeys.STATIONS);
+    if (stationsJson == null) {
+      if (!getStationFromDb(normalizedStation)) throw new NoSuchStationException();
+    } else {
+      if (!getStationFromCache(stationsJson, stationCode)) throw new NoSuchStationException();
+    }
 
-    TrainTimeDTO trainTimeDTO = this.getTrainSchedule(normalizedLine, normalizedStation);
-    if (trainTimeDTO == null || trainTimeDTO.getData() == null) {
-      throw new DataUnavailableException();
-    }
-    String scheduleKey = normalizedLine + "-" + normalizedStation;
-    TrainTimeDTO.StationSchedule scheduleData = trainTimeDTO.getData().get(scheduleKey);
-    if (scheduleData == null) {
-      throw new DataUnavailableException();
-    }
-    List<TrainTimeDTO.DepartureDetails> up = scheduleData.getUpDepartures();
-    List<TrainTimeDTO.DepartureDetails> down = scheduleData.getDownDepartures();
     List<DepartureDto.Train> earliestTrains = new ArrayList<>();
+    String currentTime = "";
+    String systemTime = "";
 
-    if (up != null) {
-      up.stream()
-          .collect(
-              Collectors.groupingBy(
-                  dep -> dep.getDest(),
-                  Collectors.minBy(Comparator.comparing(TrainTimeDTO.DepartureDetails::getTime))))
-          .forEach(
-              (dest, optionalDep) ->
-                  optionalDep.ifPresent(
-                      dep -> earliestTrains.add(this.dtoMapper.mapFirstUpTrain(dep, dest))));
+    List<String> mactchedLineCodes =
+        this.lineStationRepository.findAllByStationEntityCodeIgnoreCase(stationCode).stream()
+            .map(ls -> ls.getLineEntity().getCode())
+            .toList();
+
+    for (String lineCode : mactchedLineCodes) {
+      TrainTimeDTO trainTimeDTO = this.getTrainSchedule(lineCode, normalizedStation);
+      if (trainTimeDTO == null || trainTimeDTO.getData() == null) {
+        throw new DataUnavailableException();
+      }
+      if (currentTime.isEmpty()) {
+        currentTime = trainTimeDTO.getCurrTime();
+        systemTime = trainTimeDTO.getSysTime();
+      }
+
+      String scheduleKey = lineCode + "-" + normalizedStation;
+      TrainTimeDTO.StationSchedule scheduleData = trainTimeDTO.getData().get(scheduleKey);
+      if (scheduleData == null) {
+        throw new DataUnavailableException();
+      }
+      List<TrainTimeDTO.DepartureDetails> up = scheduleData.getUpDepartures();
+      List<TrainTimeDTO.DepartureDetails> down = scheduleData.getDownDepartures();
+
+      if (up != null) {
+        up.stream()
+            .collect(
+                Collectors.groupingBy(
+                    dep -> dep.getDest(),
+                    Collectors.minBy(Comparator.comparing(TrainTimeDTO.DepartureDetails::getTime))))
+            .forEach(
+                (dest, optionalDep) ->
+                    optionalDep.ifPresent(
+                        dep -> earliestTrains.add(this.dtoMapper.mapFirstUpTrain(dep, dest))));
+      }
+      if (down != null) {
+        down.stream()
+            .collect(
+                Collectors.groupingBy(
+                    dep -> dep.getDest(),
+                    Collectors.minBy(Comparator.comparing(TrainTimeDTO.DepartureDetails::getTime))))
+            .forEach(
+                (dest, optionalDep) ->
+                    optionalDep.ifPresent(
+                        dep -> earliestTrains.add(this.dtoMapper.mapFirstDownTrain(dep, dest))));
+      }
     }
-    if (down != null) {
-      down.stream()
-          .collect(
-              Collectors.groupingBy(
-                  dep -> dep.getDest(),
-                  Collectors.minBy(Comparator.comparing(TrainTimeDTO.DepartureDetails::getTime))))
-          .forEach(
-              (dest, optionalDep) ->
-                  optionalDep.ifPresent(
-                      dep -> earliestTrains.add(this.dtoMapper.mapFirstDownTrain(dep, dest))));
-    }
-    return this.dtoMapper.map(trainTimeDTO, normalizedStation, earliestTrains);
+    return this.dtoMapper.map(currentTime, systemTime, normalizedStation, earliestTrains);
+  }
+
+  private Boolean getStationFromDb(String stationCode) {
+    return this.stationRepository.findByCode(stationCode.toUpperCase()).isPresent();
+  }
+
+  private Boolean getStationFromCache(String stationsJson, String stationCode) {
+    return stationsJson.contains(stationCode.toUpperCase());
   }
 }

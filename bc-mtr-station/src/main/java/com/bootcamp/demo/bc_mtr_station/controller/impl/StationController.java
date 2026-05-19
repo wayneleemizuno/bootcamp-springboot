@@ -43,7 +43,7 @@ public class StationController implements StationOperation {
   }
 
   @Override
-  public DepartureDto getEarliestTrain(String lineCode, String stationCode) {
-    return this.stationService.getEarliestTrain(lineCode, stationCode);
+  public DepartureDto getEarliestTrain(String stationCode) {
+    return this.stationService.getEarliestTrain(stationCode);
   }
 }

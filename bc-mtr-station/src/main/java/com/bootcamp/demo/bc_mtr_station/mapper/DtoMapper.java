@@ -7,7 +7,6 @@ import com.bootcamp.demo.bc_mtr_station.dto.StationResDto;
 import com.bootcamp.demo.bc_mtr_station.entity.LineEntity;
 import com.bootcamp.demo.bc_mtr_station.entity.StationEntity;
 import com.bootcamp.demo.bc_mtr_station.model.Signal;
-import com.bootcamp.demo.bc_mtr_station.model.TrainTimeDTO;
 import com.bootcamp.demo.bc_mtr_station.model.TrainTimeDTO.DepartureDetails;
 import java.util.List;
 import java.util.Map;
@@ -16,10 +15,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class DtoMapper {
   public DepartureDto map(
-      TrainTimeDTO trainTimeDTO, String stationCode, List<DepartureDto.Train> trains) {
+      String currTime, String sysTime, String stationCode, List<DepartureDto.Train> trains) {
     return DepartureDto.builder()
-        .currentTime(trainTimeDTO.getCurrTime())
-        .systemTime(trainTimeDTO.getSysTime())
+        .currentTime(currTime)
+        .systemTime(sysTime)
         .currentStation(stationCode.toUpperCase())
         .trains(trains)
         .build();
